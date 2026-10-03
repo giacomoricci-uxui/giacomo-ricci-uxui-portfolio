@@ -146,3 +146,8 @@ noscript ul{list-style:none;padding:0;display:grid;gap:12px}noscript a{color:var
 .about-stats{justify-content:center;gap:72px;text-align:center}
 .about-stats .stat b{margin:0 auto}
 @media(max-width:640px){.about-stats{gap:40px}}
+
+/* Hover effect: Design Stack chips and stats */
+.w>.chips span,.about-stats .stat{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s;cursor:default}
+.w>.chips span:hover{transform:translateY(-5px) scale(1.04);box-shadow:0 12px 26px rgba(29,91,224,.28);border-color:color-mix(in srgb,var(--az) 70%,transparent)}
+.about-stats .stat:hover{transform:translateY(-6px) scale(1.08)}
