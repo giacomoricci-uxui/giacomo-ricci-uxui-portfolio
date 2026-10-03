@@ -137,3 +137,7 @@ noscript ul{list-style:none;padding:0;display:grid;gap:12px}noscript a{color:var
 
 /* About stats (skills / years) */
 .about-stats{grid-template-columns:repeat(2,minmax(0,220px));gap:20px;margin-top:40px}
+
+/* About stats: no box */
+.about-stats{display:flex;gap:56px;margin-top:40px}
+.about-stats .stat{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0;border-radius:0}
