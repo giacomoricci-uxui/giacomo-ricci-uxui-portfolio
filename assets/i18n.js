@@ -125,6 +125,8 @@
   }
 
   function updateSwitch() {
+    var sw = document.querySelector('.lang-sw');
+    if (sw) sw.setAttribute('data-lang', current);
     Array.prototype.forEach.call(document.querySelectorAll('.lang-sw button'), function (b) {
       b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === current));
     });
@@ -144,11 +146,17 @@
   function buildSwitch() {
     var css = document.createElement('style');
     css.textContent =
-      '.lang-sw{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:60;display:flex;gap:2px;padding:4px;border-radius:999px;background:rgba(255,255,255,.88);border:1px solid rgba(0,0,0,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font:600 13px/1 system-ui,sans-serif}' +
-      '.lang-sw button{all:unset;cursor:pointer;padding:8px 12px;border-radius:999px;color:#5b6472;letter-spacing:.04em}' +
+      '.lang-sw{--lang-grad:linear-gradient(135deg,#5ab0ff 0%,#1d5be0 100%);--lang-fg:#fff;position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:60;display:grid;grid-template-columns:1fr 1fr;isolation:isolate;padding:4px;border-radius:999px;background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);box-shadow:0 6px 24px rgba(0,0,0,.10);backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);font:600 13px/1 system-ui,-apple-system,sans-serif;animation:lang-in .6s cubic-bezier(.2,.7,.2,1) both}' +
+      '@keyframes lang-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}' +
+      '.lang-sw::before{content:"";position:absolute;z-index:-1;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:var(--lang-grad);box-shadow:0 4px 14px rgba(29,91,224,.35);transition:transform .5s cubic-bezier(.65,0,.35,1),box-shadow .3s}' +
+      '.lang-sw[data-lang="it"]::before{transform:translateX(100%)}' +
+      '.lang-sw button{all:unset;box-sizing:border-box;cursor:pointer;min-width:46px;padding:9px 14px;text-align:center;border-radius:999px;color:#5b6472;letter-spacing:.05em;transition:color .35s,transform .2s}' +
+      '.lang-sw button:hover{transform:scale(1.06)}' +
       '.lang-sw button:focus-visible{outline:2px solid #1d5be0;outline-offset:2px}' +
-      '.lang-sw button[aria-pressed="true"]{background:#1d5be0;color:#fff}' +
-      '@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .lang-sw{background:rgba(20,24,33,.88);border-color:rgba(255,255,255,.14)}:root:not([data-theme=light]) .lang-sw button[aria-pressed="false"]{color:#9aa3b2}}';
+      '.lang-sw button[aria-pressed="true"]{color:var(--lang-fg)}' +
+      '@media(prefers-reduced-motion:reduce){.lang-sw,.lang-sw::before,.lang-sw button{animation:none;transition:none}}' +
+      '@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .lang-sw{background:rgba(20,24,33,.82);border-color:rgba(255,255,255,.12)}:root:not([data-theme=light]) .lang-sw button[aria-pressed="false"]{color:#b4bccb}}' +
+      ':root[data-theme=dark] .lang-sw{background:rgba(20,24,33,.82);border-color:rgba(255,255,255,.12)}:root[data-theme=dark] .lang-sw button[aria-pressed="false"]{color:#b4bccb}';
     document.head.appendChild(css);
 
     var box = document.createElement('div');
@@ -166,6 +174,30 @@
     document.body.appendChild(box);
   }
 
+  // Copia gradiente e colore testo dai pulsanti del sito, così lo switch resta identico
+  function syncSwitchStyle() {
+    var sw = document.querySelector('.lang-sw');
+    if (!sw) return;
+    var ref = document.querySelector('.btn:not(.o)') || document.querySelector('.btn');
+    var grad = '', fg = '';
+    if (ref) {
+      var cs = getComputedStyle(ref);
+      if (cs.backgroundImage && cs.backgroundImage !== 'none') grad = cs.backgroundImage;
+      else if (cs.backgroundColor && cs.backgroundColor !== 'rgba(0, 0, 0, 0)') grad = cs.backgroundColor;
+      fg = cs.color;
+    }
+    if (grad) sw.style.setProperty('--lang-grad', grad);
+    if (fg) sw.style.setProperty('--lang-fg', fg);
+  }
+
+  function watchTheme() {
+    if (!('MutationObserver' in window)) return;
+    new MutationObserver(function () {
+      setTimeout(syncSwitchStyle, 80);
+      setTimeout(syncSwitchStyle, 950);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+  }
+
   function watchNewContent() {
     if (!('MutationObserver' in window)) return;
     var t = null;
@@ -179,6 +211,8 @@
   function init() {
     buildSwitch();
     setLang(initialLang(), false);
+    syncSwitchStyle();
+    watchTheme();
     watchNewContent();
   }
 
