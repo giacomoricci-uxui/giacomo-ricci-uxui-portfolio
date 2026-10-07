@@ -34,7 +34,9 @@
   // Stile
   var st = document.createElement('style');
   st.textContent = '.shot{margin:28px 0 0}.shot img{display:block;width:100%;height:auto;border-radius:16px}' +
-    '.shot figcaption{font-size:13px;opacity:.65;margin-top:8px}.slides-note{font-size:13px;opacity:.65;font-style:italic}';
+    '.shot figcaption{font-size:13px;opacity:.65;margin-top:8px}.slides-note{font-size:13px;opacity:.65;font-style:italic}' +
+    ':root[data-theme=dark] .shot figcaption,:root[data-theme=dark] .slides-note{color:#fff;opacity:1}' +
+    '@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .shot figcaption,:root:not([data-theme=light]) .slides-note{color:#fff;opacity:1}}';
   document.head.appendChild(st);
 
   function figs(key, i) {
@@ -72,6 +74,14 @@
     }).join('');
   }
 
+  function statics() {
+    var it = isIt(), pc = el('pc'), ci = el('ci'), pv = el('pv'), cx = el('cx');
+    if (pc) pc.textContent = it ? '\u2190 Indietro' : '\u2190 Back';
+    if (ci) { var ph = it ? 'Chiedimi qualsiasi cosa su Giacomo' : 'Ask me anything about Giacomo'; ci.placeholder = ph; ci.setAttribute('aria-label', ph); }
+    if (pv) pv.setAttribute('aria-label', it ? 'Dettagli del progetto' : 'Project details');
+    if (cx) cx.setAttribute('aria-label', it ? 'Chiudi chat' : 'Close chat');
+  }
+
   function apply() {
     var it = isIt();
     Object.keys(IT).forEach(function (k) {
@@ -93,6 +103,12 @@
       }
     });
     renderGrid();
+    var pc = el('pc'); if (pc) pc.textContent = L('\u2190 Back', '\u2190 Indietro');
+    var ci = el('ci');
+    if (ci) { var ph = L('Ask me anything about Giacomo', 'Chiedimi qualcosa su Giacomo'); ci.placeholder = ph; ci.setAttribute('aria-label', ph); }
+    var cx = el('cx'); if (cx) cx.setAttribute('aria-label', L('Close chat', 'Chiudi chat'));
+    var pv0 = el('pv'); if (pv0) pv0.setAttribute('aria-label', L('Project details', 'Dettagli del progetto'));
+    statics();
     var pv = el('pv');
     if (pv && !pv.hidden && lastKey) { var y = pv.scrollTop; window.openP(lastKey); pv.scrollTop = y; }
     if (el('chips') && el('chips').children.length) chips(ROOT);
