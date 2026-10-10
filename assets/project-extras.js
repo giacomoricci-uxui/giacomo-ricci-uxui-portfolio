@@ -45,6 +45,7 @@
     '#pv.is-closing{opacity:0;transform:translateY(28px);pointer-events:none}' +
     '@media(prefers-reduced-motion:reduce){#pv,#pv:not([hidden]){animation:none;transition:none}}' +
     'html{scrollbar-gutter:stable}' +
+    '#pv[data-proj="homizy"] .sc[data-i="0"] .stat,#pv[data-proj="homizy"] .sc[data-i="1"] .stat,#pv[data-proj="homizy"] .sc[data-i="0"] .pt,#pv[data-proj="homizy"] .sc[data-i="1"] .pt{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transform:none!important}' +
     '@keyframes pv-in{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}' +
     '#pv.pv-in{animation:pv-in .5s cubic-bezier(.2,.7,.2,1) both}' +
     '#pv.pv-out{opacity:0;transform:translateY(28px);transition:opacity .38s cubic-bezier(.65,0,.35,1),transform .38s cubic-bezier(.65,0,.35,1);pointer-events:none}' +
@@ -70,7 +71,7 @@
       if (x.pts) h += '<div class="pts">' + x.pts.map(function (a) { return '<div class="pt"><h3>' + a[0] + '</h3><p>' + a[1] + '</p>' + (a[2] ? '<div class="chips">' + a[2].map(function (c) { return '<span>' + c + '</span>'; }).join('') + '</div>' : '') + '</div>'; }).join('') + '</div>';
       h += figs(key, i);
       if (x.q) h += '<blockquote>' + x.q + '</blockquote>';
-      return '<div class="sc">' + h + '</div>';
+      return '<div class="sc" data-i="' + i + '">' + h + '</div>';
     }).join('');
     if (IMGS[key]) html += '<div class="sc"><p class="slides-note">' + NOTE[isIt() ? 1 : 0] + '</p></div>';
     return html;
@@ -88,6 +89,7 @@
     lastKey = k;
     openP0(k);
     el('pm').textContent = metaLine(P[k]);
+    if (pv) pv.setAttribute('data-proj', k);
     // Entrata morbida solo all'apertura (non quando cambia la lingua a pannello aperto)
     if (wasHidden && pv && !reduceMotion) {
       pv.classList.remove('pv-in', 'pv-out');
