@@ -106,7 +106,7 @@
   function figs(key, i) {
     var list = (IMGS[key] || {})[String(i)] || [];
     return list.map(function (m) {
-      return '<figure class="shot"><img src="assets/images/' + m.s + '.webp" width="' + m.w + '" height="' + m.h +
+      return '<figure class="shot"><img src="assets/images/' + m.s + (isIt() ? '' : '-en') + '.webp"' + (isIt() ? '' : ' data-fb="assets/images/' + m.s + '.webp"') + ' width="' + m.w + '" height="' + m.h +
         '" alt="' + m.c[0].replace(/"/g, '&quot;') + '" loading="lazy" decoding="async"><figcaption>' + m.c[isIt() ? 1 : 0] + '</figcaption></figure>';
     }).join('');
   }
@@ -123,7 +123,7 @@
       if (x.q) h += '<blockquote>' + x.q + '</blockquote>';
       return '<div class="sc" data-i="' + i + '">' + h + '</div>';
     }).join('');
-    if (IMGS[key]) html += '<div class="sc"><p class="slides-note">' + NOTE[isIt() ? 1 : 0] + '</p></div>';
+    if (IMGS[key]) html += '<div class="sc" id="slides-note-box" style="display:none"><p class="slides-note">' + NOTE[isIt() ? 1 : 0] + '</p></div>';
     return html;
   };
 
@@ -392,6 +392,19 @@
   }
 
   function extras() { highlightSkills(); applyIntro(); highlightCta(); }
+
+  // Se manca la versione inglese di un'immagine, usa quella italiana e mostra la nota
+  var psEl = el('ps');
+  if (psEl) psEl.addEventListener('error', function (e) {
+    var t = e.target;
+    if (t && t.tagName === 'IMG' && t.getAttribute('data-fb')) {
+      var fb = t.getAttribute('data-fb');
+      t.removeAttribute('data-fb');
+      t.src = fb;
+      var n = el('slides-note-box');
+      if (n) n.style.display = '';
+    }
+  }, true);
 
   var last = null;
   function onLang() { var l = document.documentElement.lang; if (l !== last) { last = l; apply(); extras(); } }
