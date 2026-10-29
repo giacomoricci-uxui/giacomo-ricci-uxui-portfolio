@@ -163,6 +163,75 @@
     blocks.forEach(function (b) { sumIO.observe(b); });
   }
 
+  // "Pergamena": ogni blocco si srotola in dissolvenza scendendo e si ripiega risalendo
+  (function () {
+    var st2 = document.createElement('style');
+    var EASE = 'cubic-bezier(.65,0,.35,1)';
+    var T = 'opacity .9s ease,clip-path 1.2s ' + EASE + ',translate 1s cubic-bezier(.2,.7,.2,1)';
+    st2.textContent =
+      '.ur{opacity:0;clip-path:inset(0 0 100% 0);translate:0 26px;transition:' + T + '}' +
+      '.ur.ur-in{opacity:1;clip-path:inset(-60px);translate:0 0}' +
+      '.card.ur,.btn.ur{transition:' + T + ',transform .2s,box-shadow .2s}' +
+      '.stat.ur{transition:' + T + ',transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s}' +
+      '@media(prefers-reduced-motion:reduce){.ur{opacity:1;clip-path:none;translate:none;transition:none}}';
+    document.head.appendChild(st2);
+  })();
+
+  function makeUnroll(root) {
+    if (reduceMotion || !('IntersectionObserver' in window)) return null;
+    var first = true;
+    var io = new IntersectionObserver(function (es) {
+      var k = 0;
+      es.forEach(function (e) {
+        var t = e.target;
+        if (e.isIntersecting) {
+          if (first) {
+            t.style.transitionDelay = Math.min(k * 90, 700) + 'ms';
+            k++;
+            setTimeout(function () { t.style.transitionDelay = ''; }, 2200);
+          }
+          t.classList.add('ur-in');
+        } else if (e.boundingClientRect.top > (e.rootBounds ? e.rootBounds.top + e.rootBounds.height / 2 : window.innerHeight / 2)) {
+          t.classList.remove('ur-in');
+        }
+      });
+      first = false;
+    }, { root: root, threshold: [0, 0.12], rootMargin: '0px 0px -10% 0px' });
+    return {
+      add: function (nodes) {
+        Array.prototype.forEach.call(nodes, function (n) {
+          if (n.classList.contains('ur')) return;
+          n.classList.add('ur');
+          io.observe(n);
+        });
+      },
+      stop: function () { io.disconnect(); }
+    };
+  }
+
+  // Pannello progetto: si srotola all'apertura e poi seguendo lo scorrimento
+  var panelUR = null;
+  function unrollPanel() {
+    if (panelUR) { panelUR.stop(); panelUR = null; }
+    panelUR = makeUnroll(el('pv'));
+    if (!panelUR) return;
+    panelUR.add(document.querySelectorAll(
+      '#pt,#pm,#pd,#pi,#ps .sc>h2,#ps .sc>.d,#ps .sc>.chips,#ps .sc .stat,' +
+      '#ps .sc:not([data-i="3"]) .pt,#ps .sc>.shot,#ps .sc>blockquote,#pv .pact'));
+  }
+
+  // Pagina principale: stessa animazione scorrendo
+  function unrollPage() {
+    var ur = makeUnroll(null);
+    if (!ur) return;
+    var sel = '.hero .w>*,section .w>h2,section .w>.sub,section .w>h4,section .w>.chips,.about-stats .stat,.ct';
+    ur.add(document.querySelectorAll(sel + ',#grid .card'));
+    var grid = el('grid');
+    if (grid && 'MutationObserver' in window) {
+      new MutationObserver(function () { ur.add(grid.querySelectorAll('.card')); }).observe(grid, { childList: true });
+    }
+  }
+
   var openP0 = window.openP;
   window.openP = function (k) {
     var pv = el('pv');
@@ -173,6 +242,7 @@
     if (pv) pv.setAttribute('data-proj', k);
     syncBlue();
     animateSummary();
+    unrollPanel();
     // Entrata morbida solo all'apertura (non quando cambia la lingua a pannello aperto)
     if (wasHidden && pv && !reduceMotion) {
       pv.classList.remove('pv-in', 'pv-out');
@@ -461,4 +531,5 @@
   function onLang() { var l = document.documentElement.lang; if (l !== last) { last = l; apply(); extras(); } }
   document.addEventListener('langchange', onLang);
   onLang();
+  unrollPage();
 })();
