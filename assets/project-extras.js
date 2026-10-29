@@ -69,7 +69,7 @@
     '#pv.is-closing{opacity:0;transform:translateY(28px);pointer-events:none}' +
     '@media(prefers-reduced-motion:reduce){#pv,#pv:not([hidden]){animation:none;transition:none}}' +
     'html{scrollbar-gutter:stable}' +
-    '#pv .sc[data-i="3"] .pts{display:grid!important;grid-template-columns:1fr!important;gap:36px!important}#pv .sc[data-i="3"] .d:empty{display:none}#pv .sc[data-i="3"] .pt h3{font-size:1.25em;margin-bottom:10px}#pv .sc[data-i="3"] .pt p{line-height:1.75;max-width:68ch}' +
+    '#pv .sc[data-i="3"] .pts{display:grid!important;grid-template-columns:1fr!important;gap:36px!important}#pv .sc[data-i="3"] .d:empty{display:none}#pv .sc[data-i="3"] .pt{position:relative;width:100%!important;max-width:none!important;padding-top:22px!important}#pv .sc[data-i="3"] .pt h3{font-family:inherit;font-style:italic;font-weight:600;font-size:1.3em;margin-bottom:10px}#pv .sc[data-i="3"] .pt p{width:100%;max-width:none;line-height:1.75;text-align:justify;text-justify:inter-word;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}#pv .sc[data-i="3"] .pt::before{content:"";position:absolute;left:0;top:0;width:100%;height:2px;border-radius:2px;background:var(--gr-grad,linear-gradient(90deg,#5ab0ff 0%,#1d5be0 100%));transform-origin:left center}#pv .sc[data-i="3"].sum-anim .pt{opacity:0;transform:translateY(32px)}#pv .sc[data-i="3"].sum-anim .pt::before{transform:scaleX(0)}#pv .sc[data-i="3"].sum-anim .pt.in{opacity:1;transform:none;transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}#pv .sc[data-i="3"].sum-anim .pt.in::before{transform:scaleX(1);transition:transform 1s cubic-bezier(.65,0,.35,1) .1s}#pv .sc[data-i="3"].sum-anim .pt.in h3{animation:sum-h .8s cubic-bezier(.2,.7,.2,1) .15s both}#pv .sc[data-i="3"].sum-anim .pt.in p{animation:sum-p .9s cubic-bezier(.2,.7,.2,1) .3s both}@keyframes sum-h{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}@keyframes sum-p{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){#pv .sc[data-i="3"].sum-anim .pt,#pv .sc[data-i="3"].sum-anim .pt::before{opacity:1;transform:none;transition:none}#pv .sc[data-i="3"] .pt h3,#pv .sc[data-i="3"] .pt p{animation:none!important}}' +
     '#grid .card{position:relative;animation:hl-glow 3.2s ease-in-out infinite}#grid .card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;z-index:3;pointer-events:none;background:conic-gradient(from var(--hl-a),rgba(90,176,255,0) 0%,rgba(90,176,255,0) 60%,#4aa8ff 80%,#bfeaff 92%,rgba(90,176,255,0) 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;animation:hl-spin 3.2s linear infinite}' +
     'a.btn.big{position:relative;animation:hl-glow 3s ease-in-out infinite}a.btn.big::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;z-index:3;pointer-events:none;background:conic-gradient(from var(--hl-a),rgba(90,176,255,0) 0%,rgba(90,176,255,0) 60%,#4aa8ff 80%,#bfeaff 92%,rgba(90,176,255,0) 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;animation:hl-spin 3s linear infinite}' +
     '@media(prefers-reduced-motion:reduce){#grid .card,#grid .card::before,a.btn.big,a.btn.big::after{animation:none}}' +
@@ -146,6 +146,22 @@
     if (cols && cols.length) pv.style.setProperty('--gr-blue', cols[cols.length - 1]);
   }
 
+  // Riassunto del Progetto: i tre blocchi compaiono uno dopo l'altro mentre si scorre
+  var sumIO = null;
+  function animateSummary() {
+    if (sumIO) { sumIO.disconnect(); sumIO = null; }
+    var sc = document.querySelector('#ps .sc[data-i="3"]');
+    if (!sc || reduceMotion || !('IntersectionObserver' in window)) return;
+    var blocks = sc.querySelectorAll('.pt');
+    sc.classList.add('sum-anim');
+    sumIO = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); sumIO.unobserve(e.target); }
+      });
+    }, { root: el('pv'), threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
+    blocks.forEach(function (b) { sumIO.observe(b); });
+  }
+
   var openP0 = window.openP;
   window.openP = function (k) {
     var pv = el('pv');
@@ -155,6 +171,7 @@
     el('pm').textContent = metaLine(P[k]);
     if (pv) pv.setAttribute('data-proj', k);
     syncBlue();
+    animateSummary();
     // Entrata morbida solo all'apertura (non quando cambia la lingua a pannello aperto)
     if (wasHidden && pv && !reduceMotion) {
       pv.classList.remove('pv-in', 'pv-out');
