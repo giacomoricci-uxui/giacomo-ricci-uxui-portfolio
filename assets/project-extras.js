@@ -391,7 +391,40 @@
     });
   }
 
-  function extras() { highlightSkills(); applyIntro(); highlightCta(); }
+  // Hero: stessa distanza tra paragrafo -> pulsanti delle competenze e pulsanti -> "Chat with my AI"
+  function tidyHero() {
+    if (typeof getComputedStyle === 'undefined') return;
+    var p = document.querySelector('.r + p') || document.querySelector('header p');
+    var box = document.getElementById('intro-chips');
+    var btn = document.querySelector('header [data-chat]') || document.querySelector('[data-chat]');
+    if (!p || !box || !btn) return;
+    box.style.marginBottom = '0px';
+    btn.style.marginTop = '';
+    var gap1 = box.getBoundingClientRect().top - p.getBoundingClientRect().bottom;
+    var gap2 = btn.getBoundingClientRect().top - box.getBoundingClientRect().bottom;
+    var base = parseFloat(getComputedStyle(btn).marginTop) || 0;
+    btn.style.marginTop = Math.max(0, base + (gap1 - gap2)) + 'px';
+  }
+  var tidyT = null;
+  function tidySoon() { clearTimeout(tidyT); tidyT = setTimeout(tidyHero, 60); }
+  window.addEventListener('resize', tidySoon);
+  window.addEventListener('load', tidySoon);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(tidySoon);
+
+  // Rimuove l'emoji della stretta di mano (U+1F91D) dalla pagina
+  function removeHandshake() {
+    if (!document.createTreeWalker || typeof NodeFilter === 'undefined') return;
+    var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n, hits = [];
+    while ((n = w.nextNode())) { if (n.nodeValue.indexOf('\uD83E\uDD1D') > -1) hits.push(n); }
+    hits.forEach(function (node) {
+      var cleaned = node.nodeValue.replace(/\uD83E\uDD1D\uFE0F?/g, '');
+      var par = node.parentNode;
+      if (!cleaned.trim() && par && par !== document.body && par.children.length === 0 && par.parentNode) par.parentNode.removeChild(par);
+      else node.nodeValue = cleaned;
+    });
+  }
+
+  function extras() { highlightSkills(); applyIntro(); highlightCta(); removeHandshake(); tidySoon(); }
 
   // Se manca la versione inglese di un'immagine, usa quella italiana e mostra la nota
   var psEl = el('ps');
