@@ -218,8 +218,7 @@
     panelUR = makeUnroll(el('pv'));
     if (!panelUR) return;
     panelUR.add(document.querySelectorAll(
-      '#pt,#pm,#pd,#pi,#ps .sc>h2,#ps .sc>.d,#ps .sc>.chips,#ps .sc .stat,' +
-      '#ps .sc:not([data-i="3"]) .pt,#ps .sc>.shot,#ps .sc>blockquote,#pv .pact'));
+            '#ps .sc[data-i="3"]>h2'));
   }
 
   // Pagina principale: stessa animazione scorrendo
