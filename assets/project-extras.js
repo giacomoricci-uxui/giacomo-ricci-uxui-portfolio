@@ -103,7 +103,38 @@
     '@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .shot figcaption,:root:not([data-theme=light]) .slides-note{color:#fff;opacity:1}}';
   document.head.appendChild(st);
 
+    var ENIMGS = {
+    homizy: {
+      "0": ["Homizy copertina en.png", "homizy ux mission english.jpg", "homizy ux research english.jpg"],
+      "1": ["homizy insight english.jpg"],
+      "2": ["homizy zymatch & zymate english.jpg", "homizy onboarding english.jpg"]
+    },
+    lumen: {
+      "0": ["Lumen Copertina en.png"],
+      "2": ["lumen dashboard english.jpg", "Lumen Wiki english.png", "Lumen Wiki 2 english.png", "Lumen Wiki 3 english.png", "lumen answer english.jpg", "Lumen Project english.png", "Lumen Workload 4 prima parte english.png", "Lumen Workload seconda parte english.png"]
+    },
+    antianti: {
+      "0": ["antianti copertina english.png", "antianti il problema overview english.png"],
+      "1": ["antianti value drop english .png"],
+      "2": ["antianti solution english.png", "antianti ideas english.png", "antianti features english.png"]
+    },
+    perii: {
+      "0": ["perii copertina english.png"],
+      "1": ["perii interviews english.jpg"],
+      "2": ["perii onboarding english.jpg", "perii caregivers english.jpg"]
+    }
+  };
   function figs(key, i) {
+    if (!isIt() && ENIMGS[key]) {
+      var en = ENIMGS[key][String(i)] || [];
+      return en.map(function (f) {
+        var alt = f.replace(/\.\w+$/, '').replace(/\s+(english|en)\s*$/i, '').replace(/"/g, '&quot;');
+        return '<figure class="shot"><img src="assets/images/' + encodeURIComponent(f) + '" alt="' + alt + '" loading="lazy" decoding="async"></figure>';
+      }).join('');
+    }
+    return figsIT(key, i);
+  }
+  function figsIT(key, i) {
     var list = (IMGS[key] || {})[String(i)] || [];
     return list.map(function (m) {
       return '<figure class="shot"><img src="assets/images/' + m.s + (isIt() ? '' : '-en') + '.webp"' + (isIt() ? '' : ' data-fb="assets/images/' + m.s + '.webp"') + ' width="' + m.w + '" height="' + m.h +
