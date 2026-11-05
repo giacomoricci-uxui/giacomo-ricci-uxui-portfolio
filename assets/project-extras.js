@@ -103,28 +103,31 @@
     '@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .shot figcaption,:root:not([data-theme=light]) .slides-note{color:#fff;opacity:1}}';
   document.head.appendChild(st);
 
-    var ENIMGS = {
+    var ENCOVER = {
+    homizy: "Homizy copertina en.png",
+    lumen: "Lumen Copertina en.png",
+    antianti: "antianti copertina english.png",
+    perii: "perii copertina english.png"
+  };
+  var ENIMGS = {
     homizy: {
-      "0": ["Homizy copertina en.png", "homizy ux mission english.jpg", "homizy ux research english.jpg"],
+      "0": ["homizy ux mission english.jpg", "homizy ux research english.jpg"],
       "1": ["homizy insight english.jpg"],
       "2": ["homizy zymatch & zymate english.jpg", "homizy onboarding english.jpg"]
     },
     lumen: {
-      "0": ["Lumen Copertina en.png"],
-      "2": ["lumen dashboard english.jpg", "Lumen Wiki english.png", "Lumen Wiki 2 english.png", "Lumen Wiki 3 english.png", "lumen answer english.jpg", "Lumen Project english.png", "Lumen Workload 4 prima parte english.png", "Lumen Workload seconda parte english.png"]
+      "2": ["lumen dashboard english.jpg", "Lumen Wiki english.png", "Lumen Wiki 2 english.png", "Lumen Wiki 3 english.png", "lumen answer english.jpg", "Lumen Project english.png", "Lumen Workload seconda parte english.png", "Lumen Workload 4 prima parte english.png"]
     },
     antianti: {
-      "0": ["antianti copertina english.png", "antianti il problema overview english.png"],
+      "0": ["antianti il problema overview english.png"],
       "1": ["antianti value drop english .png"],
       "2": ["antianti solution english.png", "antianti ideas english.png", "antianti features english.png"]
     },
     perii: {
-      "0": ["perii copertina english.png"],
       "1": ["perii interviews english.jpg"],
       "2": ["perii onboarding english.jpg", "perii caregivers english.jpg"]
     }
   };
-  function figs(key, i) {
     if (!isIt() && ENIMGS[key]) {
       var en = ENIMGS[key][String(i)] || [];
       return en.map(function (f) {
@@ -271,6 +274,11 @@
     lastKey = k;
     openP0(k);
     el('pm').textContent = metaLine(P[k]);
+        if (!isIt() && ENCOVER[k]) {
+      var cv = el('pi').querySelector('img');
+      if (cv) cv.src = 'assets/images/' + encodeURIComponent(ENCOVER[k]);
+    }
+    
     if (pv) pv.setAttribute('data-proj', k);
     syncBlue();
     animateSummary();
