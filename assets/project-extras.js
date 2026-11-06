@@ -405,6 +405,31 @@
   };
   var backBtn = el('pc');
   if (backBtn) backBtn.onclick = window.closeP;
+    // Pulsante Indietro: stessa transizione fluida dello switch lingua
+  var bfxStyle = document.createElement('style');
+  bfxStyle.textContent = '@media(prefers-reduced-motion:no-preference){#pv.pv-out{filter:blur(8px);transition:opacity .38s cubic-bezier(.65,0,.35,1),transform .38s cubic-bezier(.65,0,.35,1),filter .38s cubic-bezier(.65,0,.35,1)}}';
+  document.head.appendChild(bfxStyle);
+
+  var closeInstant = closeP0;
+  var backBusy = false;
+  window.closeP = function () {
+    var pv = el('pv');
+    if (!pv || pv.hidden || backBusy) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { closeInstant(); return; }
+    backBusy = true;
+    var done = function () { backBusy = false; };
+    if (document.startViewTransition) {
+      var vt = document.startViewTransition(function () { closeInstant(); });
+      (vt.finished || Promise.resolve()).then(done, done);
+      setTimeout(done, 1500);
+    } else {
+      pv.classList.remove('pv-in');
+      pv.classList.add('pv-out');
+      setTimeout(function () { closeInstant(); pv.classList.remove('pv-out'); done(); }, 380);
+    }
+  };
+  
+  if (backBtn) backBtn.onclick = window.closeP;
 
   function renderGrid() {
     el('grid').innerHTML = Object.keys(P).map(function (k) {
