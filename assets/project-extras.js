@@ -367,6 +367,20 @@
       }, 200);
     }
   }, true);
+    var legendStyle = document.createElement('style');
+  legendStyle.textContent = '.proj-legend{margin:48px 0 8px;padding-top:20px;border-top:1px solid rgba(128,128,128,.28);font-size:13px;line-height:1.6;opacity:.7;text-align:center}';
+  document.head.appendChild(legendStyle);
+  var LEGEND = ['Every project was developed in Italian for Italian companies.', 'Ogni progetto è stato sviluppato in italiano per aziende italiane.'];
+  function addLegend() {
+    var ps = el('ps');
+    if (!ps) return;
+    var old = ps.querySelector('.proj-legend');
+    if (old) old.parentNode.removeChild(old);
+    var p = document.createElement('p');
+    p.className = 'proj-legend';
+    p.textContent = LEGEND[isIt() ? 1 : 0];
+    ps.appendChild(p);
+  }
   
   var openP0 = window.openP;
   window.openP = function (k) {
@@ -377,6 +391,7 @@
     el('pm').textContent = metaLine(P[k]);
     if (pv) pv.setAttribute('data-proj', k);
     fixPanel(k);
+    addLegend();
     syncBlue();
     animateSummary();
     unrollPanel();
