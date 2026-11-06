@@ -313,6 +313,60 @@
     b.classList.remove('lang-soft'); void b.offsetWidth; b.classList.add('lang-soft');
     setTimeout(function () { b.classList.remove('lang-soft'); }, 600);
   }, true);
+
+    // Cambio lingua: transizione fluida (dissolvenza + blur)
+  var lfxStyle = document.createElement('style');
+  lfxStyle.textContent =
+    '@media(prefers-reduced-motion:no-preference){' +
+    '::view-transition-old(root){animation:lfx-out .5s cubic-bezier(.4,0,.2,1) both}' +
+    '::view-transition-new(root){animation:lfx-in .7s cubic-bezier(.22,1,.36,1) both}' +
+    '@keyframes lfx-out{to{opacity:0;filter:blur(10px)}}' +
+    '@keyframes lfx-in{from{opacity:0;filter:blur(10px)}}' +
+    'html.lfx-run #main,html.lfx-run #pv,html.lfx-run #ch,html.lfx-run footer{transition:opacity .6s cubic-bezier(.22,1,.36,1),filter .6s cubic-bezier(.22,1,.36,1)}' +
+    'html.lfx-run.lfx-out #main,html.lfx-run.lfx-out #pv,html.lfx-run.lfx-out #ch,html.lfx-run.lfx-out footer{opacity:0;filter:blur(8px);transition-duration:.2s}' +
+    '}';
+  document.head.appendChild(lfxStyle);
+
+  var lfxBusy = false;
+  function isLangBtn(b) {
+    var t = (b.textContent || '').trim();
+    var meta = ((b.id || '') + ' ' + (typeof b.className === 'string' ? b.className : '')).toLowerCase();
+    return /lang/.test(meta) || /^(it|ita|en|eng)$/i.test(t) || /^(it|ita)\s*[\/|·\-–]\s*(en|eng)$/i.test(t);
+  }
+  document.addEventListener('click', function (e) {
+    if (lfxBusy) return;
+    var b = e.target.closest && e.target.closest('button,a,[role="button"]');
+    if (!b || !isLangBtn(b)) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    lfxBusy = true;
+    var root = document.documentElement;
+    var safety = setTimeout(function () { lfxBusy = false; root.classList.remove('lfx-run', 'lfx-out'); }, 2000);
+    var finish = function () { clearTimeout(safety); lfxBusy = false; };
+    var doSwitch = function () {
+      return new Promise(function (res) {
+        var done = function () { document.removeEventListener('langchange', done); res(); };
+        document.addEventListener('langchange', done);
+        b.click();
+        setTimeout(done, 400);
+      });
+    };
+    if (document.startViewTransition) {
+      var vt = document.startViewTransition(doSwitch);
+      (vt.finished || Promise.resolve()).then(finish, finish);
+    } else {
+      root.classList.add('lfx-run', 'lfx-out');
+      setTimeout(function () {
+        doSwitch().then(function () {
+          requestAnimationFrame(function () {
+            root.classList.remove('lfx-out');
+            setTimeout(function () { root.classList.remove('lfx-run'); finish(); }, 650);
+          });
+        });
+      }, 200);
+    }
+  }, true);
   
   var openP0 = window.openP;
   window.openP = function (k) {
