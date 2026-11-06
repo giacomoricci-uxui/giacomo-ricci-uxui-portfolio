@@ -264,6 +264,56 @@
     }
   }
 
+ 
+  var COVEREN = {
+    homizy: "Homizy copertina en.png",
+    lumen: "Lumen Copertina en.png",
+    antianti: "antianti copertina english.png",
+    perii: "perii copertina english.png"
+  };
+  function nameOf(im) {
+    if (!im) return '';
+    try { return decodeURIComponent((im.getAttribute('src') || '').split('/').pop()); } catch (e) { return ''; }
+  }
+  function fixPanel(k) {
+    if (isIt()) return;
+    var cover = COVEREN[k];
+    if (cover) {
+      var cv = el('pi') && el('pi').querySelector('img');
+      if (cv) {
+        var orig = cv.getAttribute('src');
+        cv.onerror = function () { cv.onerror = null; cv.src = orig; };
+        cv.src = 'assets/images/' + encodeURIComponent(cover);
+      }
+      Array.prototype.forEach.call(document.querySelectorAll('#ps .shot'), function (f) {
+        if (nameOf(f.querySelector('img')) === cover) f.parentNode.removeChild(f);
+      });
+    }
+    if (k === 'lumen') {
+      var A = null, B = null;
+      Array.prototype.forEach.call(document.querySelectorAll('#ps .shot'), function (f) {
+        var n = nameOf(f.querySelector('img'));
+        if (n === 'Lumen Workload 4 prima parte english.png') A = f;
+        if (n === 'Lumen Workload seconda parte english.png') B = f;
+      });
+      if (A && B && (A.compareDocumentPosition(B) & 4)) B.parentNode.insertBefore(B, A);
+    }
+  }
+
+  var langStyle = document.createElement('style');
+  langStyle.textContent = '.lang-soft{animation:lang-soft .55s cubic-bezier(.22,1,.36,1)}@keyframes lang-soft{0%{transform:scale(.92);opacity:.55}55%{transform:scale(1.04);opacity:1}100%{transform:none;opacity:1}}@media(prefers-reduced-motion:reduce){.lang-soft{animation:none}}';
+  document.head.appendChild(langStyle);
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button,a,[role="button"]');
+    if (!b) return;
+    var t = (b.textContent || '').trim();
+    var meta = ((b.id || '') + ' ' + (typeof b.className === 'string' ? b.className : '')).toLowerCase();
+    var isLang = /lang/.test(meta) || /^(it|ita|en|eng)$/i.test(t) || /^(it|ita)\s*[\/|·\-–]\s*(en|eng)$/i.test(t);
+    if (!isLang) return;
+    b.classList.remove('lang-soft'); void b.offsetWidth; b.classList.add('lang-soft');
+    setTimeout(function () { b.classList.remove('lang-soft'); }, 600);
+  }, true);
+  
   var openP0 = window.openP;
   window.openP = function (k) {
     var pv = el('pv');
@@ -272,6 +322,7 @@
     openP0(k);
     el('pm').textContent = metaLine(P[k]);
     if (pv) pv.setAttribute('data-proj', k);
+    fixPanel(k);
     syncBlue();
     animateSummary();
     unrollPanel();
