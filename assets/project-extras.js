@@ -704,6 +704,25 @@
     }
   }, true);
 
+  // Smartphone: altezza della dock e tastiera
+  (function () {
+    var dk = el('dk');
+    if (!dk) return;
+    var root = document.documentElement;
+    function size() { root.style.setProperty('--dock-h', dk.offsetHeight + 'px'); }
+    size();
+    if (window.ResizeObserver) new ResizeObserver(size).observe(dk);
+    var vv = window.visualViewport;
+    if (vv) {
+      var adj = function () {
+        var off = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+        dk.style.bottom = off > 80 ? 'calc(' + off + 'px + 10px)' : '';
+      };
+      vv.addEventListener('resize', adj);
+      vv.addEventListener('scroll', adj);
+    }
+  })(); 
+ 
   var last = null;
   function onLang() { var l = document.documentElement.lang; if (l !== last) { last = l; apply(); extras(); } }
   document.addEventListener('langchange', onLang);
