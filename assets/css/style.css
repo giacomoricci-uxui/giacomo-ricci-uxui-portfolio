@@ -151,3 +151,55 @@ noscript ul{list-style:none;padding:0;display:grid;gap:12px}noscript a{color:var
 .w>.chips span,.about-stats .stat{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s;cursor:default}
 .w>.chips span:hover{transform:translateY(-5px) scale(1.04);box-shadow:0 12px 26px rgba(29,91,224,.28);border-color:color-mix(in srgb,var(--az) 70%,transparent)}
 .about-stats .stat:hover{transform:translateY(-6px) scale(1.08)}
+
+/* ===== Smartphone ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:clip}
+img,svg,video{max-width:100%}
+.card,.btn,.pill,.pc,.go,.cx{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ov{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+html .w,html .ovh,html .pv{padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+
+@media(pointer:coarse){
+  html .pill{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+  html .cx,html .go{min-width:44px;min-height:44px}
+}
+@media(hover:none){
+  html .card:hover{transform:none;box-shadow:var(--sh)}
+  html .btn:hover,html .pill:hover,html .pc:hover,html .go:hover,html .qr:hover,html .w>.chips span:hover,html .about-stats .stat:hover{transform:none}
+}
+@media(max-width:640px) and (prefers-reduced-motion:no-preference){
+  html .ur{filter:blur(4px)}
+}
+@media(max-width:640px){
+  html{scroll-padding-top:88px}
+  html nav .w{flex-wrap:nowrap;gap:6px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+  html nav .pill{padding:7px 12px;font-size:14px;white-space:nowrap}
+  html #th{flex:none}
+  html .hero{padding:56px 0 36px}
+  html section{padding:48px 0}
+  html .card .t{padding:18px 20px 20px}
+  html .lk{flex-wrap:wrap}
+  html footer{padding-bottom:190px}
+  html .card,html .stat,html .pt{-webkit-backdrop-filter:none;backdrop-filter:none}
+  html .pv,html .card .t,html .pt{overflow-wrap:break-word}
+  html .cpanel{max-height:min(52vh,520px);max-height:min(52dvh,520px)}
+
+  /* Dentro i progetti: una colonna sola e riassunto allineato a sinistra */
+  html #pv[data-proj="lumen"] .stats{grid-template-columns:1fr!important}
+  html #pv:is([data-proj="lumen"],[data-proj="antianti"],[data-proj="perii"]) .sc[data-i="2"] .pts{grid-template-columns:1fr!important}
+  html #pv .sc[data-i="3"] .pt p{text-align:left;hyphens:manual;-webkit-hyphens:manual}
+
+  /* Switch lingua: sopra la barra della chat; nei progetti in alto a destra */
+  html body .lang-sw{left:auto;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(var(--dock-h,120px) + max(14px,env(safe-area-inset-bottom,0px)) + 10px)}
+  html body:has(#pv:not([hidden])) .lang-sw{top:calc(env(safe-area-inset-top,0px) + 12px);bottom:auto}
+  html body:has(#ch:not([hidden])) .lang-sw,html body:has(#ci:focus) .lang-sw{opacity:0!important;pointer-events:none}
+}
+
+/* Su telefono il QR diventa un pulsante che apre il prototipo */
+@media(max-width:640px) and (pointer:coarse){
+  html a.qr .qrb{display:none}
+  html a.qr{padding:12px 28px;border-radius:99px;background-image:var(--sheen),var(--gb);border:1px solid rgba(255,255,255,.4);box-shadow:var(--sh)}
+  html a.qr .qrt{font-size:0;color:#fff}
+  html a.qr .qrt::after{content:"Open the prototype";font-size:15px;font-weight:500}
+  html[lang="it"] a.qr .qrt::after{content:"Apri il prototipo"}
+}
