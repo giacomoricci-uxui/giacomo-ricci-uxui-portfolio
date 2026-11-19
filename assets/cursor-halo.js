@@ -15,9 +15,9 @@
   'use strict';
 
   var ZONE  = 'hero';
-  var SIZE  = 760;
+  var SIZE  = 900;
   var SOFT  = 0.14;
-  var POWER = 0.22;
+  var POWER = 0.32;
 
   // Niente su touch (non c'è cursore) o se l'utente riduce le animazioni
   if (window.matchMedia && (
