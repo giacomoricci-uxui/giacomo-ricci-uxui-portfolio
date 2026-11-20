@@ -22,6 +22,23 @@
   delete ENO.perii.sec[1].pts;     // PERII: stessa parte in inglese ("How we listened")
   delete IT.antianti.sec[1].pts;   // ANTIANTI: "Il drop di valore" e "Il paradosso"
   delete ENO.antianti.sec[1].pts;  // ANTIANTI: "The value drop" e "The paradox"
+ 
+    // LUMEN: frasi integrate nel testo de "Il problema"
+  delete IT.lumen.sec[0].pts;
+  delete ENO.lumen.sec[0].pts;
+  IT.lumen.sec[0].t  += " Quale task va prioritizzata? Dipende da chi chiedi. Dov'è l'ultimo feedback del cliente? Da qualche parte tra Slack, Drive, mail e appunti delle riunioni.";
+  ENO.lumen.sec[0].t += " Which task should be prioritized? It depends on who you ask. Where's the latest client feedback? Somewhere between Slack, Drive, emails and meeting notes.";
+  
+   // HOMIZY: tolto il blocco "Dove si rompe davvero" (con Comunicazione, Ritmi, Orari, Abitudini)
+  delete IT.homizy.sec[0].pts;
+  delete ENO.homizy.sec[0].pts;
+  
+    // ANTIANTI: "Il momento critico" integrato nel testo de "Il problema"
+  delete IT.antianti.sec[0].pts;
+  delete ENO.antianti.sec[0].pts;
+  IT.antianti.sec[0].t  += " Il momento critico è l'istante in cui un capo smette di rientrare nella storia di chi lo indossa.";
+  ENO.antianti.sec[0].t += " The critical moment is the instant a piece stops fitting the user's story.";
+  
   // Sunto dei bisogni mostrato nelle card della home
   var NEEDS = {
     homizy: ['Compatibility between people and social needs.', 'Compatibilità tra persone e bisogni sociali.'],
